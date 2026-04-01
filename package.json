@@ -1,0 +1,23 @@
+{
+  "name": "campaign-briefs-interview-mock",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mock Campaign Briefs API for Senior QA technical interviews",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test:api-example": "vitest run"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2"
+  },
+  "devDependencies": {
+    "axios": "^1.7.9",
+    "vitest": "^3.0.5"
+  }
+}

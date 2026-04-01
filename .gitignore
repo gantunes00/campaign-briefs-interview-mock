@@ -1,0 +1,11 @@
+node_modules/
+.env
+.DS_Store
+npm-debug.log*
+
+# Interviewer-only — keep locally; never publish to the candidate-facing remote
+INTERVIEWER.md
+INTERVIEW_SCRIPT.md
+
+# Maintainer helper (run locally; not part of candidate bundle)
+scripts/publish-public-candidate-repo.sh

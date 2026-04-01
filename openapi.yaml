@@ -1,0 +1,157 @@
+openapi: 3.0.3
+info:
+  title: Campaign Briefs API (Interview Mock)
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/v1
+    description: Local
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CreateCampaignBriefRequest:
+      type: object
+      required: [accountId, title, objective]
+      properties:
+        accountId:
+          type: string
+          format: uuid
+        title:
+          type: string
+          minLength: 3
+          maxLength: 120
+        objective:
+          type: string
+          minLength: 10
+        tags:
+          type: array
+          maxItems: 5
+          items:
+            type: string
+            pattern: '^[a-z0-9-]+$'
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+    CampaignBrief:
+      type: object
+      required: [id, accountId, title, objective, status, createdAt]
+      properties:
+        id:
+          type: string
+          format: uuid
+        accountId:
+          type: string
+          format: uuid
+        title:
+          type: string
+        objective:
+          type: string
+        status:
+          type: string
+          enum: [draft, submitted]
+        tags:
+          type: array
+          items:
+            type: string
+        metadata:
+          type: object
+          additionalProperties:
+            type: string
+        createdAt:
+          type: string
+          format: date-time
+    CampaignBriefListResponse:
+      type: object
+      required: [items, page, pageSize, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/CampaignBrief'
+        page:
+          type: integer
+        pageSize:
+          type: integer
+        total:
+          type: integer
+    ErrorResponse:
+      type: object
+      required: [code, message, details]
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              message:
+                type: string
+security:
+  - bearerAuth: []
+paths:
+  /campaign-briefs:
+    post:
+      summary: Create a campaign brief
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCampaignBriefRequest'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignBrief'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Unauthorized
+    get:
+      summary: List campaign briefs
+      parameters:
+        - name: accountId
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: pageSize
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CampaignBriefListResponse'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
