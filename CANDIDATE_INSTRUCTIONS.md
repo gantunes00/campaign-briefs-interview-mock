@@ -1,22 +1,22 @@
-# Technical interview — Candidate instructions
+# Technical interview — Live exercise briefing
 
-This document describes what to prepare, what you will do during the session, and how to work with the **Campaign Briefs** mock API. Your interviewer may send you a **base URL**, a **Bearer token**, and this repository or a copy of [`openapi.yaml`](openapi.yaml).
+**This briefing is given during the interview**, not sent ahead of time. Your interviewer will share what you need in the moment: typically a **base URL**, a **Bearer token**, access to the **OpenAPI** description, and (if applicable) this repository or a clone you open during the session.
+
+Use the sections below as a **shared agenda** you can follow while you work.
 
 ---
 
-## Before the session
+## During the session — what you need
 
-### Environment
+Your interviewer will confirm how you are set up. Usually you will have:
 
-- **Node.js 20+** and **npm** (or **pnpm** / **yarn** if you prefer — adapt commands accordingly).
-- A stable **network** connection if the API is hosted remotely.
-- Your usual **IDE** or editor and terminal. **Postman**, **Insomnia**, or similar are fine if you prefer them for exploration.
+- **Node.js 20+** and **npm** (or **pnpm** / **yarn**) on the machine you are using for the call.
+- A **stable network** if the API is hosted remotely.
+- Your **IDE** or editor and a terminal. **Postman**, **Insomnia**, or similar are fine if you prefer them.
 
-### Optional local setup
+If you are asked to run the mock **locally** from this repository, the interviewer will walk you through it or you can follow these steps when they say to:
 
-If you receive **this repository**, you can run the mock API on your machine:
-
-1. Copy `.env.example` to `.env` and set `INTERVIEW_API_TOKEN` to the **same value** your interviewer gives you for the exercise (unless they tell you otherwise).
+1. Copy `.env.example` to `.env` and set `INTERVIEW_API_TOKEN` to the **token they give you on the call** (unless they specify otherwise).
 2. Run:
 
    ```bash
@@ -32,32 +32,32 @@ If you receive **this repository**, you can run the mock API on your machine:
 
    You should see `ok`.
 
-If the API is **only** available at a **remote URL** (for example Cloud Run), you do **not** need to run the server locally. Point your tests or HTTP client at the URL your interviewer provides.
+If the API is **only** reachable at a **remote URL**, you do **not** need to start the server yourself. Use the URL and credentials your interviewer provides in the session.
 
 ---
 
 ## Contract
 
-The API is described in **[`openapi.yaml`](openapi.yaml)**. Treat it as the **source of truth** for:
+The API is described in **[`openapi.yaml`](openapi.yaml)** (your interviewer will make this available—file, link, or paste). Treat it as the **source of truth** for:
 
 - Paths and base URL (including the `/v1` prefix).
 - Required headers (**`Authorization: Bearer <token>`**; **`Content-Type: application/json`** on `POST` bodies).
 - Request and response shapes, status codes, and query parameters.
 
-Use the **seeded account id** from the README examples when listing data so you have enough rows to exercise pagination without creating many records first.
+Use the **seeded account id** your interviewer points you to (same value as in the examples in this repo’s README and in `openapi` samples) when listing data so you have enough rows to exercise pagination without creating many records first.
 
 ---
 
 ## Part 1 — Automation (live coding)
 
-You will implement **automated checks** against the running API (not only manual clicks). The interviewer will confirm the exact expectations in the session; typically they include showing that:
+You will implement **automated checks** against the running API (not only manual clicks). The interviewer will state the exact expectations on the call; typically they include showing that:
 
 1. A **valid create** request returns **success** with the **required fields** defined in the contract.
 2. A **list** request returns **success** with the **expected list/pagination shape**.
 3. **Unauthorized** access is rejected appropriately when credentials are missing or invalid.
 4. A **clearly invalid** request body is rejected with an error response you can describe or assert on.
 
-**Suggested stack (optional):** this repo includes a **Vitest** starter at [`tests/campaign-briefs.api.example.test.mjs`](tests/campaign-briefs.api.example.test.mjs). You may extend it or use **Jest**, **curl scripts**, or another approach you are productive with.
+**Suggested stack (optional):** if you are using this repo, there is a **Vitest** starter at [`tests/campaign-briefs.api.example.test.mjs`](tests/campaign-briefs.api.example.test.mjs). You may extend it or use **Jest**, **curl scripts**, or another approach you are productive with.
 
 **Practical tips:**
 
@@ -87,9 +87,9 @@ In real projects, **documentation and behavior do not always match**. You may se
 
 Your job is to **investigate calmly**: reproduce, observe, then explain.
 
-### What to prepare for each scenario
+### What to cover for each scenario
 
-For every situation the interviewer gives you, be ready to cover **four points**:
+For every situation the interviewer gives you on the call, be ready to cover **four points**:
 
 | # | What to cover |
 |---|----------------|
@@ -102,14 +102,14 @@ You may use **`curl`**, your **tests from Part 1**, **Postman/Insomnia**, or a q
 
 ### Standard scenarios (typical loop)
 
-Your interviewer will guide you. In many sessions you will be asked to look at **four** situations (there may be **exactly four** distinct topics to discuss—confirm with them). Typical probes:
+The interviewer will guide you. In many sessions you will be asked to look at **four** situations (there may be **exactly four** distinct topics to discuss—they will confirm). Typical probes:
 
 | # | Situation | What to think about |
 |---|-----------|---------------------|
 | **A** | **`POST /v1/campaign-briefs`** with a **valid JSON body**, but the **`Content-Type` is not `application/json`** (for example `text/plain`), or the header is **omitted**. | How do clients and servers usually agree on JSON bodies? What does the spec imply about errors? What do you actually get (status, body format)? |
 | **B** | **`POST`** with **`tags`: `["DACH"]`** (uppercase letters). | What does [`openapi.yaml`](openapi.yaml) say about **tag** values? If the server accepts the request, is that **aligned** with the schema? Is the issue in the spec, the implementation, or both? |
 | **C** | **`GET /v1/campaign-briefs?accountId=not-a-uuid&page=1`** with **valid authentication**. | Invalid query parameters often produce **client errors** (`4xx`) with a structured body. What happens here? Is the error shape **consistent** with other validation errors you saw in Part 1? |
-| **D** | **`GET`** with a **valid `accountId`**, **`page=2`**, **`pageSize=10`**. The seeded account has **enough rows** (see README) to fill more than one page. | For pagination, what does the contract say about **`items`**, **`page`**, **`pageSize`**, and **`total`**? Count the **number of items returned** for page 2—does it match what you expect from the spec and from the total number of rows? |
+| **D** | **`GET`** with a **valid `accountId`**, **`page=2`**, **`pageSize=10`**. The seeded account has **enough rows** (as described on the call / in the shared materials) to fill more than one page. | For pagination, what does the contract say about **`items`**, **`page`**, **`pageSize`**, and **`total`**? Count the **number of items returned** for page 2—does it match what you expect from the spec and from the total number of rows? |
 
 Use the **same Bearer token** as in Part 1 unless the scenario is explicitly about **missing or invalid auth**.
 
@@ -135,9 +135,9 @@ Regression check I would add: …
 
 ## Quick reference — `curl`
 
-Replace `YOUR_TOKEN` and the host with the values from your interviewer.
+Use the **host** and **token** your interviewer gives you during the session.
 
-**List (example account id from README):**
+**List (example account id from shared materials):**
 
 ```bash
 curl -sS "http://localhost:8080/v1/campaign-briefs?accountId=3fa85f64-5717-4562-b3fc-2c963f66afa6&page=1&pageSize=10" \
@@ -159,7 +159,7 @@ curl -sS -X POST http://localhost:8080/v1/campaign-briefs \
 
 ### Optional — `curl` starting points for Part 2 probes
 
-Replace the host (`BASE`), token, and bodies as needed. **`BASE`** is your API root including **`/v1`** (for example `http://localhost:8080/v1` or `https://example.run.app/v1`).
+Replace **`BASE`** (API root including **`/v1`**) and **`YOUR_TOKEN`** with the values from the interview.
 
 **A — `POST` with JSON bytes but `Content-Type` not `application/json`:**
 
@@ -197,14 +197,12 @@ curl -sS "${BASE}/campaign-briefs?accountId=3fa85f64-5717-4562-b3fc-2c963f66afa6
 
 ## If something fails
 
-- **401 / Unauthorized:** Check that the **`Authorization`** header matches the token (no extra spaces; **`Bearer `** prefix).
-- **Connection refused:** Confirm the **host**, **port**, and that the server is running (if local).
-- **Tests cannot read the token:** Ensure **`INTERVIEW_API_TOKEN`** is set in **`.env`** at the project root or exported in the shell before running Vitest.
+- **401 / Unauthorized:** Check that the **`Authorization`** header matches the token the interviewer gave you (no extra spaces; **`Bearer `** prefix).
+- **Connection refused:** Confirm the **host**, **port**, and whether you were asked to run the server locally.
+- **Tests cannot read the token:** Ensure **`INTERVIEW_API_TOKEN`** is set in **`.env`** at the project root or exported in the shell before running Vitest—using the value from the interview.
 
 ---
 
 ## Language
 
-The interview is conducted in **English** (or as agreed with your recruiter). Ask factual questions about URLs, tokens, or time checks whenever you need to.
-
-Good luck.
+The interview is conducted in **English** (or as agreed with your recruiter). Ask your **interviewer** for factual clarifications (URLs, tokens, time checks) whenever you need to.

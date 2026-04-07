@@ -2,7 +2,7 @@
 
 Small **Express** service used in **Senior QA** live interviews. It exposes versioned JSON endpoints under `/v1`, expects a **Bearer token**, and ships with an **OpenAPI 3** description in [`openapi.yaml`](openapi.yaml).
 
-**Candidates:** start with **[`CANDIDATE_INSTRUCTIONS.md`](CANDIDATE_INSTRUCTIONS.md)**.
+**Interviewers:** use **[`CANDIDATE_INSTRUCTIONS.md`](CANDIDATE_INSTRUCTIONS.md)** as the **live** briefing during the session (not sent to candidates beforehand).
 
 ## Requirements
 
@@ -117,7 +117,7 @@ After deploy, use your Cloud Run URL as the base (paths remain `/v1/...`).
 
 | Path | Purpose |
 |------|---------|
-| `CANDIDATE_INSTRUCTIONS.md` | **Candidate-facing** — prep, exercise overview, tips |
+| `CANDIDATE_INSTRUCTIONS.md` | **Live interview** — briefing script / shared agenda (not advance prep) |
 | `openapi.yaml` | API contract |
 | `src/server.js` | Mock implementation |
 | `tests/campaign-briefs.api.example.test.mjs` | Starter automation (Vitest) |
